@@ -1,0 +1,251 @@
+# Project: Portable PostgreSQL Web Application
+
+Build a simple full-stack web application called **Portable Notes Manager**.
+
+## 1. Main Objective
+
+The primary purpose of this project is to demonstrate that an application developed using Replit Agent can run independently in two environments:
+
+1. Replit Cloud
+2. An on-premises server (Windows Server or Linux Server)
+
+Both deployments must use the exact same source code, with no Replit runtime dependency.
+
+The application must support continuous development and updates, allowing changes to be deployed to either environment independently from a shared GitHub repository.
+
+**Portability is the highest priority.**
+
+## 2. Technology Stack
+
+Use the following technologies:
+
+- Backend: Node.js with Express and TypeScript
+- Frontend: React with Vite
+- Database: PostgreSQL
+- Database access: Drizzle ORM with PostgreSQL driver
+- Containerization: Docker and Docker Compose
+- Source control: Git and GitHub
+- Configuration: Environment variables
+
+Do not use Replit-specific database SDKs, authentication services, storage services, or runtime APIs.
+
+Replit must function only as a development and hosting environment, not as a required application dependency.
+
+## 3. Application Features
+
+Create a very simple Notes Manager.
+
+Each record contains:
+
+- ID (auto-generated primary key)
+- Student Name
+- Note Title
+- Note Description
+- Created Date
+- Updated Date
+
+Features:
+
+- Display all notes
+- Add a new note
+- Edit an existing note
+- Delete a note with confirmation
+- Search notes by student name or title
+
+Build a clean, simple, responsive interface.
+
+Do not introduce unnecessary features.
+
+## 4. PostgreSQL Requirements
+
+Use standard PostgreSQL.
+
+The database connection must come exclusively from the environment variable:
+
+DATABASE_URL
+
+Do not hardcode database hostnames, credentials, database names, or ports.
+
+The application must support:
+
+- PostgreSQL running on Replit-compatible infrastructure
+- PostgreSQL installed on a separate on-premises server
+- PostgreSQL running in Docker
+
+Provide version-controlled database migrations.
+
+Migrations must run independently of Replit.
+
+Never automatically delete or reset production data during application deployment.
+
+## 5. Application Architecture
+
+Organize the project into clearly separated layers:
+
+- Frontend
+- Backend API
+- Database access
+- Database migrations
+- Environment configuration
+
+Use REST APIs for all database operations.
+
+The frontend must never access PostgreSQL directly.
+
+The backend must serve the production frontend build so the application can run as one deployable service.
+
+Provide a /api/health endpoint that verifies application and database connectivity.
+
+Avoid hardcoded localhost URLs and Replit domains in application logic.
+
+## 6. Docker Requirements
+
+Create:
+
+- Dockerfile
+- compose.yaml
+- .dockerignore
+- .env.example
+
+The Docker image must build and run outside Replit.
+
+Docker Compose must support:
+
+- Application container
+- PostgreSQL container
+- Persistent PostgreSQL volume
+- Environment-based configuration
+- Database health checks
+- Automatic restart policies
+
+The application must also support connecting to an existing external PostgreSQL server without requiring a PostgreSQL container.
+
+Do not bake secrets into Docker images.
+
+## 7. Replit Compatibility
+
+The application must run normally inside Replit using its standard development workflow.
+
+Configure the appropriate start and development commands.
+
+If Replit provides PostgreSQL automatically, use it only through the standard DATABASE_URL connection string.
+
+Do not introduce dependencies on Replit deployment infrastructure.
+
+Do not require Docker to run the application inside Replit.
+
+## 8. On-Premises Compatibility
+
+The application must run on a standard Linux server with Docker and Docker Compose.
+
+It should also support Windows Server through a compatible Linux-container hosting environment, such as a Linux virtual machine.
+
+Provide a deployment guide explaining how to:
+
+1. Clone the GitHub repository.
+2. Configure environment variables.
+3. Start PostgreSQL.
+4. Build the application.
+5. Run the application.
+6. Access it through a browser.
+7. Stop and restart the application.
+8. Apply updates without deleting existing data.
+
+No Replit account, API, or runtime must be required for on-premises operation.
+
+## 9. GitHub and Continuous Updates
+
+The project must use a single GitHub repository as the source of truth.
+
+Both Replit and the on-premises server must use the same repository.
+
+Implement the following workflow:
+
+Development in Replit → Commit changes → Push to GitHub → Deploy updates to on-premises.
+
+Ensure:
+
+- The same code works in both environments.
+- Each environment has its own configuration.
+- Each environment has its own PostgreSQL database.
+- Updating the application does not overwrite or delete existing database records.
+- Database migrations are applied safely.
+- Application versions can be identified using a version number or Git commit.
+
+Provide clear commands for pulling updates and rebuilding the on-premises Docker deployment.
+
+Include rollback instructions for application code and explain database migration rollback limitations.
+
+## 10. Environment Separation
+
+Support at least two environments:
+
+**Replit Development**
+- Replit-hosted application
+- Development PostgreSQL database
+- Development environment variables
+
+**On-Premises Production**
+- Docker-hosted application
+- On-premises PostgreSQL database
+- Production environment variables
+
+Never synchronize or overwrite database records automatically between the environments.
+
+Only application code and database schema migrations should be shared through GitHub.
+
+## 11. Documentation
+
+Create the following files:
+
+- README.md
+- docs/REPLIT_SETUP.md
+- docs/ON_PREMISE_DEPLOYMENT.md
+- docs/UPDATE_DEPLOYMENT.md
+- docs/ARCHITECTURE.md
+
+Documentation must include exact commands rather than only conceptual explanations.
+
+## 12. Portability Verification
+
+Before declaring the project complete:
+
+1. Build and run the application in Replit.
+2. Verify all CRUD operations using PostgreSQL.
+3. Verify that the application can be built using a standard Dockerfile.
+4. Verify that no Replit-specific imports or runtime services are required.
+5. Verify that environment variables control all environment-specific configuration.
+6. Verify that the Docker deployment preserves PostgreSQL data across application restarts.
+7. Verify that application updates do not reset the database.
+
+If Docker execution is unavailable inside Replit, do not claim Docker deployment has been tested. Clearly identify the steps that require verification on an external server.
+
+## 13. Important Constraints
+
+- Do not overengineer the application.
+- Do not introduce Kubernetes, Redis, microservices, or complex authentication.
+- Do not use SQLite.
+- Do not use Replit's proprietary services as application dependencies.
+- Do not create separate codebases for Replit and on-premises.
+- Do not use automatic destructive database schema synchronization.
+- Keep the project small, understandable, and portable.
+
+## Expected Final Deliverables
+
+At the end, provide:
+
+1. Working Notes Manager application.
+2. PostgreSQL schema and migrations.
+3. Dockerfile and Docker Compose configuration.
+4. GitHub-ready source code.
+5. Replit run instructions.
+6. On-premises installation instructions.
+7. On-premises update commands.
+8. Explanation of how the same application operates in both environments.
+9. A list of tests completed and tests still requiring external verification.
+
+**Critical success criterion:**
+
+I must be able to stop using Replit completely, clone the repository onto an independent server, configure PostgreSQL, and run the application without modifying its source code.
+
+Future updates developed in Replit must remain deployable to the on-premises installation through GitHub without rebuilding the project from scratch.

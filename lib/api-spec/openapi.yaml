@@ -10,7 +10,27 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: notes
+    description: Notes management
 paths:
+  /health:
+    get:
+      operationId: getApplicationHealth
+      tags: [health]
+      summary: Check application and database health
+      responses:
+        "200":
+          description: Application and database are available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationHealth"
+        "503":
+          description: Database is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationHealth"
   /healthz:
     get:
       operationId: healthCheck
@@ -24,8 +44,136 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [notes]
+      summary: List notes
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Search student names and note titles
+      responses:
+        "200":
+          description: Notes matching the search
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteInput"
+      responses:
+        "201":
+          description: Created note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "400":
+          description: Invalid note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /notes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      operationId: getNote
+      tags: [notes]
+      summary: Get one note
+      responses:
+        "200":
+          description: Requested note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateNote
+      tags: [notes]
+      summary: Update a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdate"
+      responses:
+        "200":
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "400":
+          description: Invalid note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteNote
+      tags: [notes]
+      summary: Delete a note
+      responses:
+        "200":
+          description: Deleted note identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteNoteResult"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
+    ApplicationHealth:
+      type: object
+      properties:
+        status:
+          type: string
+        database:
+          type: boolean
+        version:
+          type: string
+      required:
+        - status
+        - database
+        - version
     HealthStatus:
       type: object
       properties:
@@ -33,4 +181,75 @@ components:
           type: string
       required:
         - status
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+        studentName:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - studentName
+        - title
+        - description
+        - createdAt
+        - updatedAt
+    NoteInput:
+      type: object
+      properties:
+        studentName:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+      required:
+        - studentName
+        - title
+        - description
+    NoteUpdate:
+      type: object
+      properties:
+        studentName:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+      required:
+        - studentName
+        - title
+        - description
+    DeleteNoteResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        deleted:
+          type: boolean
+      required:
+        - id
+        - deleted
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 

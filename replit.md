@@ -1,14 +1,16 @@
-# [Project name]
+# Portable Notes Manager
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A portable student notes app with a React/Vite interface, Express REST API, Drizzle ORM, and PostgreSQL.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/portable-notes-manager run dev` — run the Vite web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `pnpm --filter @workspace/db run generate` — generate a version-controlled migration from schema changes
+- `pnpm --filter @workspace/db run migrate` — apply pending migrations
 - Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
@@ -22,23 +24,33 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/portable-notes-manager/` — React/Vite client
+- `artifacts/api-server/` — Express REST API and production static frontend serving
+- `lib/api-spec/openapi.yaml` — API contract
+- `lib/db/src/schema/` and `lib/db/migrations/` — PostgreSQL schema and migration history
+- `Dockerfile`, `compose.yaml`, `.env.example` — portable Docker deployment configuration
+- `docs/` — setup and deployment guides
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The application reads its database connection only from `DATABASE_URL`; each environment uses an independent PostgreSQL database.
+- Production Docker serves the built frontend and API from one Express service.
+- Schema updates use checked-in Drizzle migrations; deployments never reset data or run automatic schema push.
+- Replit-specific services are not application dependencies.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Manage student notes: list, search by student name or title, create, edit, and delete.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+Portability across Replit and on-premises is the highest priority. Keep the project small and do not add unnecessary features.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Replit workflows inject `PORT` and `BASE_PATH`; standalone Docker builds set them explicitly.
+- Apply migrations with `migrate`, not destructive schema synchronization.
+- Keep `.env` out of Git; do not use `docker compose down -v` unless intentionally deleting the database volume.
 
 ## Pointers
 
